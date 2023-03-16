@@ -15,7 +15,7 @@ movl 4(%esp), %eax      # %eax is now the "this" pointer, so points to the class
 
 divisionBy100:
     addl $8, %eax           # now accessing the "int _augmentationSalariale" attribute
-    movl $0x3d800000, %ebx  # floating point value 100.0 in %ebx
+    movl $0x42c80000, %ebx  # floating point value 100.0 in %ebx
     movl %ebx, (%esp)
     flds (%esp)             # st[0] = 100.0
     flds (%eax)             # st[0] = _augmentationSalariale,    st[1] = 100.0

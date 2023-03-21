@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-//int syracuse_s_iter(unsigned int);
-//int syracuse_s_rec(unsigned int, unsigned int);
+int syracuse_s_iter(unsigned int);
+int syracuse_s_rec(unsigned int, unsigned int);
 
 void syracuse_c_iter(unsigned int);
 void syracuse_c_rec(unsigned int, unsigned int);
@@ -18,7 +18,7 @@ int main()
    syracuse_c_iter(u0);
 
    printf("Suite de syracuse iterative - ASM\n");
-   //syracuse_s_iter(u0);
+   syracuse_s_iter(u0);
 
    // Decommentez cette partie lorsque vous avez implemente la version recursive
    // printf("\n\nSuite de syracuse recursive - ASM\n");

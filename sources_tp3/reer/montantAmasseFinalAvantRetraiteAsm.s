@@ -22,10 +22,10 @@ callSalaireFinaleAndGetSalaireRetraite:
     # need to access the "int _salaireVouluRetraite", the 4th class attribute:
     addl $12, %ebx          # now accessing _salaireVouluRetraite
     movl $0x42c80000, %ecx  # %ecx = 100.0 in floating point
-    flds %ecx               # st[0] = 100.0
-    flds %ebx               # st[0] = _salaireVouluRetraite, st[1] = 100.0
+    flds (%ecx)             # st[0] = 100.0
+    flds (%ebx)             # st[0] = _salaireVouluRetraite, st[1] = 100.0
     fdivp                   # st[0] = _salaireVouluRetraite / 100.0, st[1] = free
-    flds %eax               # st[0] = return value of salaireFinal(), st[1] = _salaireVouluRetraite / 100.0
+    flds (%eax)             # st[0] = return value of salaireFinal(), st[1] = _salaireVouluRetraite / 100.0
     fmulp                   # st[0] = salaireFinal() * _salaireVouluRetraite / 100.0, st[1] = free
 
     # a good idea is to push the value on the general purpose stack in order to free up registers
@@ -36,65 +36,57 @@ callSalaireFinaleAndGetSalaireRetraite:
     movl (%esp), %edx       # %edx = salaireFinal() * _salaireVouluRetraite / 100.0 = salaireRetraite
     popl (%esp)
     addl $4, %esp
-    pushl %edx              GPstack[0] = salaireRetraite
+    pushl %edx              # GP stack[0] = salaireRetraite
+
+
+#---------------------- function called -----------------------------
+#--------------------------------------------------------------------
 
 pow:
     ## now we can simply reimplemente the functions created in the salaireFinalAsm, except we would need to switch up to adapte to the context:
-    ## here is the copy paste:
+    ## here is the copy paste w/ the modifs:
+    ## also, the "this" pointer is now %ebx instead of %eax, %ebx = _salaireVouluRetraite
 
     #-----------------------BEGIN----------------------
 
     divisionBy100:
-        addl $8, %eax           # now accessing the "int _augmentationSalariale" attribute
-        movl $0x42c80000, %ebx  # floating point value 100.0 in %ebx
-        movl %ebx, (%esp)
+        addl $4, %ebx           # now accessing the "int _tauxInteret" attribute
+        movl $0x42c80000, %eax  # floating point value 100.0 in %eax
+        movl %eax, (%esp)
         flds (%esp)             # st[0] = 100.0
-        flds (%eax)             # st[0] = _augmentationSalariale,    st[1] = 100.0
-        fdivp                   # st[0] = _augmentationSalariale/100.0,     st[1] = free
-        movl %eax, %esp
-        subl $12, %esp
+        flds (%ebx)             # st[0] = _tauxInteret,    st[1] = 100.0
+        fdivp                   # st[0] = _tauxInteret/100.0,     st[1] = free
+        movl %ebx, %esp
+        subl $8, %esp           # clear +4 spaces
         fstps (%esp)            # stack empty
-        movl (%esp), %ecx       # %ecx = _augmentationSalariale/100.0
+        movl (%esp), %ecx       # %ecx = _tauxInteret/100.0
         addl $4, %esp
 
     addOne:
-        xor %ebx, %ebx
-        movl $0x3f800000, %ebx  # floating point value 1.0 in %ebx
+        xor %eax, %eax
+        movl $0x3f800000, %eax  # floating point value 1.0 in %eax
         pushl %esp
-        movl %ebx, (%esp)
+        movl %eax, (%esp)
         flds (%esp)             # st[0] = 1.0, st[1] = free
-        flds %ecx               # st[0] = _augmentationSalariale/100.0, st[1] = 1.0
+        flds (%ecx)             # st[0] = _tauxInteret/100.0, st[1] = 1.0
         faddp                   # st[0] = 1.0 + _augmentationSalariale/100.0, st[1] = free
         popl %esp
-        subl $4, %esp
+        subl $4, %esp           # clear +4 space
         fstps (%esp)
         movl (%esp), %ecx
-        addl $4, %esp           # %ecx holds 1.0 + (_augmentationSalariale/100.0) in floating point
+        addl $4, %esp           # %ecx holds 1.0 + (_tauxInteret/100.0) in floating point
 
     powAndMult:
 
         # base is in %ecx register
         # need to compute power:
-        # need to access protected int _anneeAvantRetraite; @ class address + 24
-        # eax is already @ class address + 8, so still needs to add 16
+        # need to access protected int _anneeAvantRetraite
+        # ebx is already @ _tauxInteret, so still needs to substract 4*4
         
-        addl $12, %eax          # now accessing int _anneeAvantRetraite
-        pushl %esp              # save %esp
-        movl %ebx, (%esp)       # %ebx holds 1.0 in floating point
-        flds (%esp)             # st[0] = 1.0
-        flds %eax               # st[0] = _anneeAvantRetraite, st[1] = 1.0
-        fsubp                    # st[0] = _anneeAvantRetraite - 1.0, st[1] = free
-        
-        ## need to put the exponant in st[0] and the base in st[1]
-        
-        popl %esp               # %esp restored
-        subl $4, %esp           # free up some space for double precision value
-        fstps (%esp)            # value contained @ %esp is _anneeAvantRetraite - 1.0
-        movl (%esp), %ebx       # %ebx = _anneeAvantRetraite - 1.0
-        addl $4, %esp            # %esp back to normal
+        subl $16, %ebx          # now accessing int _anneeAvantRetraite
 
-        flds %ecx               # st[0] = 1.0 + (_augmentationSalariale/100.0), st[1] = free
-        flds %ebx               # st[0] = _anneeAvantRetraite - 1.0, st[1] = 1.0 + (_augmentationSalariale/100.0)
+        flds (%ecx)             # st[0] = 1.0 + (_tauxInteret/100.0), st[1] = free
+        flds (%ebx)             # st[0] = _anneeAvantRetraite, st[1] = 1.0 + (_augmentationSalariale/100.0)
 
         ## the fyl2x instruction converts the exponent to a base 2 exponent
         ## => exp * (log2 (base) ) 
@@ -108,26 +100,28 @@ pow:
         fld1                    # st[0] = 1.0, st[1] = 2^(exp * (log2 (base))) - 1
         faddp                   # st[0] = 2^(exp * (log2 (base))) = base ^ exp, st[1] = free
 
-        ## Now, we are almost done, we just need to multiply by "int _salaireDepart", the 2nd element of the class "Reer"
-        ## we need to substract 16 from the %eax register to access that attribute
-
-        subl $16, %eax          # now accessing _salaireDepart
-        flds %eax               # st[0] = _salaireDepart, st[1] = base ^ exp
-        fmulp                   # st[0] = _salaireDepart * (base ^ exp)
         
         ## done, need to load the value into a register to later push it on the FPU stack
         pushl (%esp)
         subl $4, %esp           # make some room
         fstps (%esp)            # FPU stack is free, %esp points to the value of the return val
-        movl (%esp), %eax       # we don't need %eax anymore so we can safely recycle it
-        popl (%esp)
+        movl (%esp), %ecx       # we don't need %ecx anymore so we can safely recycle it
+        popl (%esp)             # ecx now holds the value of "pow(1 + double(_tauxInteret) / 100, _anneesDeRetraite)"
         addl $4, %esp
 
-
-
-    #------------------------END-----------------------
+upperOperand:
+    flds (%ecx)
+    fld1
+    fsubp                   # ((1+_tauxInteret)**_anneesDeRetraite) -1
+    pushl (%esp)
+    subl $4, %esp           # make some room
+    fstps (%esp)            # FPU stack is free, %esp points to the value of the return val
+    movl (%esp), %edx       # we don't need %edx for now so we can safely use it
+    popl (%esp)             # edx now holds the value of ((1+_tauxInteret)**_anneesDeRetraite) -1
+    addl $4, %esp
 
 divide:
+    
 
 ASSemble:
 

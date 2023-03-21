@@ -32,7 +32,7 @@ addOne:
     pushl %esp
     movl %ebx, (%esp)
     flds (%esp)             # st[0] = 1.0, st[1] = free
-    flds %ecx               # st[0] = _augmentationSalariale/100.0, st[1] = 1.0
+    flds (%ecx)               # st[0] = _augmentationSalariale/100.0, st[1] = 1.0
     faddp                   # st[0] = 1.0 + _augmentationSalariale/100.0, st[1] = free
     popl %esp
     subl $4, %esp
@@ -51,7 +51,7 @@ powAndMult:
     pushl %esp              # save %esp
     movl %ebx, (%esp)       # %ebx holds 1.0 in floating point
     flds (%esp)             # st[0] = 1.0
-    flds %eax               # st[0] = _anneeAvantRetraite, st[1] = 1.0
+    flds (%eax)               # st[0] = _anneeAvantRetraite, st[1] = 1.0
     fsubp                    # st[0] = _anneeAvantRetraite - 1.0, st[1] = free
     
     # need to put the exponant in st[0] and the base in st[1]
@@ -62,8 +62,8 @@ powAndMult:
     movl (%esp), %ebx       # %ebx = _anneeAvantRetraite - 1.0
     addl $4, %esp            # %esp back to normal
 
-    flds %ecx               # st[0] = 1.0 + (_augmentationSalariale/100.0), st[1] = free
-    flds %ebx               # st[0] = _anneeAvantRetraite - 1.0, st[1] = 1.0 + (_augmentationSalariale/100.0)
+    flds (%ecx)               # st[0] = 1.0 + (_augmentationSalariale/100.0), st[1] = free
+    flds (%ebx)               # st[0] = _anneeAvantRetraite - 1.0, st[1] = 1.0 + (_augmentationSalariale/100.0)
 
     # the fyl2x instruction converts the exponent to a base 2 exponent
     # => exp * (log2 (base) ) 
@@ -81,7 +81,7 @@ powAndMult:
     # we need to substract 16 from the %eax register to access that attribute
 
     subl $16, %eax          # now accessing _salaireDepart
-    flds %eax               # st[0] = _salaireDepart, st[1] = base ^ exp
+    flds (%eax)               # st[0] = _salaireDepart, st[1] = base ^ exp
     fmulp                   # st[0] = _salaireDepart * (base ^ exp)
     
     # done, need to load the value into a register to later push it on the FPU stack
@@ -94,7 +94,7 @@ powAndMult:
     jmp bye
 
 bye:
-    flds %eax
+    flds (%eax)
     jmp retour
 
 # FIN COMPLETION

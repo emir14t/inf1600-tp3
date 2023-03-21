@@ -116,16 +116,35 @@ upperOperand:
     pushl (%esp)
     subl $4, %esp           # make some room
     fstps (%esp)            # FPU stack is free, %esp points to the value of the return val
-    movl (%esp), %edx       # we don't need %edx for now so we can safely use it
+    movl (%esp), %edx       # we don't need %edx (salaireRetraite has already been pushed on the stack) for now so we can safely use it
     popl (%esp)             # edx now holds the value of ((1+_tauxInteret)**_anneesDeRetraite) -1
     addl $4, %esp
 
 divide:
-    
+    lowerOperand:
+        # ebx is @ _anneesDeRetraite, but we need to access _tauxInteret;
+        # need to add 16
+        addl $16, %ebx      # now accessing _tauxInteret;
+        flds (%ebx)         # st[0] = _tauxInteret, st[1] = free
+        flds (%ecx)         # st[0] = (1+_tauxInteret)**_anneesDeRetraite
+        fmulp               # st[0] = ((1+_tauxInteret)**_anneesDeRetraite) * _tauxInteret, la valeur voulue;
+    flds (%edx)         # st[0] = ((1+_tauxInteret)**_anneesDeRetraite) -1, st[1] = ((1+_tauxInteret)**_anneesDeRetraite) * _tauxInteret;
+    fdivp               # st[0] = ratio, st[1] = free
 
 ASSemble:
+    popl %edx           # %edx is now back to salaireRetraite(), GPstack[0] = free
+    flds (%edx)         # st[0] = salaireRetraite, st[1] = ratio
+    fmulp               # st[0] = return result, st[1] = free
+    pushl (%esp)
+    subl $4, %esp           # make some room
+    fstps (%esp)            # FPU stack is free, %esp points to the value of the return val
+    movl (%esp), %eax       # we don't need %eax anymore
+    popl (%esp)             # eax now holds the retrurn value
+    addl $4, %esp
 
 bye:
+    flds (%eax)
+    popl %ebp
 # FIN COMPLETION
 # NE RIEN MODIFIER APRES CETTE LIGNE
 retour:

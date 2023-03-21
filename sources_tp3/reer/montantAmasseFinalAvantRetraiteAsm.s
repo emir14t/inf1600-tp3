@@ -80,13 +80,13 @@ pow:
 
         # base is in %ecx register
         # need to compute power:
-        # need to access protected int _anneeAvantRetraite
+        # need to access int _anneeDeRetraite
         # ebx is already @ _tauxInteret, so still needs to substract 4*4
         
-        subl $16, %ebx          # now accessing int _anneeAvantRetraite
+        subl $16, %ebx          # now accessing int _anneeDeRetraite
 
         flds (%ecx)             # st[0] = 1.0 + (_tauxInteret/100.0), st[1] = free
-        flds (%ebx)             # st[0] = _anneeAvantRetraite, st[1] = 1.0 + (_augmentationSalariale/100.0)
+        flds (%ebx)             # st[0] = _anneeDeRetraite, st[1] = 1.0 + (_augmentationSalariale/100.0)
 
         ## the fyl2x instruction converts the exponent to a base 2 exponent
         ## => exp * (log2 (base) ) 

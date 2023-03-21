@@ -6,13 +6,23 @@ pushl   %ebp
 movl    %esp, %ebp
 pushl %ebx
 # DEBUT COMPLETION
-
+## should be crispy
 init:
 movl 4(%ebp), %ecx
 xor %eax, %eax
 xor %ebx, %ebx
 
 loop:
+    affichage:
+        subl $4, %esp
+        movl %eax, (%esp)
+        subl $4, %esp
+        movl %ecx, (%esp)
+        call afficher
+        movl (%esp), %ecx
+        addl $4, %esp
+        movl (%esp), %eax
+        addl $4, %esp
     test:
         cmp $1, %ecx
         je isOne

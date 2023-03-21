@@ -13,9 +13,15 @@ init:
     movl 4(%ebp), %ebx      # %ebx now accesses the "this" pointer to the class
     xor %eax, %eax
     xor %edx, %edx
+    pushl %esi
+    pushl 8(%ebp)
 
 callSalaireFinaleAndGetSalaireRetraite:
-    call _ZN4Reer12salaireFinalEv   # i think this is right, have to review name mangling
+    call _ZN4Reer15salaireFinalAsmEv
+  
+    popl %esi # this
+    movl 16(%esi), %ebx
+     # i think this is right, have to review name mangling
     # %eax now holds the value that the function returns, in floating point format
     
     ## now computing "const int salaireRetraite":

@@ -8,16 +8,16 @@ pushl %ebx
 # DEBUT COMPLETION
 
 init:
-    movl 4(%ebp), %ebx      # right
-    movl 8(%ebp), %ecx      # left
-    movl 12(%ebp), %edx     # table
+    movl 16(%ebp), %ebx      # right
+    movl 12(%ebp), %ecx      # left
+    movl 8(%ebp), %edx     # table
     xor %eax, %eax
 
 breakRecursion:
     movl %ecx, %eax
     addl $2, %eax
     cmp %eax, %ebx
-    jg bye
+    jle bye
 
 pivot:
     pushl %edx
@@ -83,22 +83,22 @@ whileLoopK:
     xor %eax, %eax
     movl (%edx, %ebx), %eax  # %eax = table[--k]
 
-    ## reset %ebx back to an integer and not an address incrementor
-    #------------
-    ## put on the stack
+    # # reset %ebx back to an integer and not an address incrementor
+    # ------------
+    # # put on the stack
     pushl %eax
     pushl %edx
-    #------------
+    # ------------
     xor %edx, %edx
     movl %ebx, %eax
     movl $4, %ebx
     divl %ebx
     movl %eax, %ecx
-    #------------
+    # ------------
     ## remove from the stack
     popl %edx
     popl %eax
-    #------------
+    # ------------
 
     cmp %eax, 12(%esp)      # compare table[--k] with pivot
     jg whileLoopK

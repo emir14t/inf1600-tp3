@@ -6,7 +6,7 @@ pushl   %ebp
 movl    %esp, %ebp
 pushl %ebx
 # DEBUT COMPLETION
-## should be crispy
+# should be crispy
 init:
 movl 4(%ebp), %ecx
 xor %eax, %eax

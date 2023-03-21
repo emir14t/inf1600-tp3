@@ -11,9 +11,11 @@ init:
     movl 4(%ebp), %ebx      # %ebx now accesses the "this" pointer to the class
     xor %eax, %eax
     xor %edx, %edx
-
+    pushl %esi
+    pushl 8(%ebp)
 callMontantAccumule:
-    call _ZNReer31montantAmasseFinalAvantRetraiteEV
+    call _ZN4Reer34montantAmasseFinalAvantRetraiteAsmEv
+    popl %esi # this
 
     # %eax now holds the value that the function returns, in floating point format
     # now i need to access _tauxInteret in the class, @ %ebx+16

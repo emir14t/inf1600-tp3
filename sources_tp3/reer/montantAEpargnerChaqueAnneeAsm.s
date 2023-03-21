@@ -13,7 +13,8 @@ init:
     xor %eax, %eax
     xor %edx, %edx
 
-
+callMontantAccumule:
+    call _ZNReer31montantAmasseFinalAvantRetraiteEV
 
 
 # FIN COMPLETION

@@ -15,7 +15,7 @@ init:
     xor %edx, %edx
 
 callSalaireFinaleAndGetSalaireRetraite:
-    call _ZN4Reer15salaireFinalEv   # i think this is right, have to review name mangling
+    call _ZN4Reer12salaireFinalEv   # i think this is right, have to review name mangling
     # %eax now holds the value that the function returns, in floating point format
     
     ## now computing "const int salaireRetraite":

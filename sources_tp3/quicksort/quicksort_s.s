@@ -40,7 +40,9 @@ whileLoopI:
     xor %edx, %edx
     movl %ecx, %eax
     addl $1, %eax 
-    mull $4
+    movl $4, %ecx
+    mull %ecx
+    xor %edx, %edx
     movl %eax, %ecx # ++i
     popl %edx       # table is off the stack and back into %edx
     xor %eax, %eax
@@ -54,7 +56,9 @@ whileLoopI:
     #------------
     xor %edx, %edx
     movl %ecx, %eax
-    divl $4
+    movl $4, %ecx
+    divl %ecx
+    xor %edx, %edx
     movl %eax, %ecx
     #------------
     ## remove from the stack
@@ -71,22 +75,24 @@ whileLoopK:
     xor %edx, %edx
     movl %ebx, %eax
     subl $1, %eax 
-    mull $4
+    movl $4, %ebx
+    mull %ebx
       
     movl %eax, %ebx # --k
     popl %edx       # table is off the stack and back into %edx
     xor %eax, %eax
     movl (%edx, %ebx), %eax  # %eax = table[--k]
 
-    ## reset %ecx back to an integer and not an address incrementor
+    ## reset %ebx back to an integer and not an address incrementor
     #------------
     ## put on the stack
     pushl %eax
     pushl %edx
     #------------
     xor %edx, %edx
-    movl %ecx, %eax
-    divl $4
+    movl %ebx, %eax
+    movl $4, %ebx
+    divl %ebx
     movl %eax, %ecx
     #------------
     ## remove from the stack

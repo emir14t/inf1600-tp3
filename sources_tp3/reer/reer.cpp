@@ -35,3 +35,4 @@ int Reer::montantAInvestirMaintenant()
 {
     return montantAmasseFinalAvantRetraite() * pow(1 + double(_tauxInteret) / 100, -_anneeAvantRetraite);
 }
+ 

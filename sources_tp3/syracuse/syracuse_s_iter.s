@@ -13,33 +13,38 @@ xor %eax, %eax
 xor %ebx, %ebx
 
 loop:
-test:
-cmp $1, %ecx
-je isOne
-incl %ebx
-xor %edx, %edx
-movl %ecx, %eax
-divl $2
-cmp $0, %edx
-je isEven
-jmp isOdd
+    test:
+        cmp $1, %ecx
+        je isOne
+        incl %ebx
+        xor %edx, %edx
+        movl %ecx, %eax
+        pushl %ecx
+        movl $2, %ecx
+        divl %ecx
+        cmp $0, %edx
+        je isEven
+        jmp isOdd
 
 isEven:
-movl %eax, %ecx
-jmp loop
+    popl %ecx
+    movl %eax, %ecx
+    jmp loop
 
 isOdd:
-movl %ecx, %eax
-mull $3
-addl $1, %eax
-movl %eax, %ecx
-xor %edx, %edx
-jmp loop
+    popl %ecx
+    movl %ecx, %eax
+    movl $3, %ecx
+    mull %ecx
+    addl $1, %eax
+    movl %eax, %ecx
+    xor %edx, %edx
+    jmp loop
 
 
 isOne:
-movl %ebx, %eax
-jmp retour
+    movl %ebx, %eax
+    jmp retour
 
 # FIN COMPLETION
 # NE RIEN MODIFIER APRES CETTE LIGNE

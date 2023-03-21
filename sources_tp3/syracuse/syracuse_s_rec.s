@@ -18,7 +18,10 @@ je isOne
 incl %ecx
 movl %ebx, %eax
 xor %edx, %edx
-divl $2
+pushl %ebx
+movl $2, %ebx
+divl %ebx
+popl %ebx
 cmp $0, %edx
 je isEven
 jmp isOdd
@@ -30,7 +33,10 @@ call syracuse_s_rec
 
 isOdd:
 movl %ebx, %eax
-mull $3
+pushl %ebx
+movl $3, %ebx
+mull %ebx
+popl %ebx
 addl $1, %eax
 pushl %eax
 pushl %ecx
